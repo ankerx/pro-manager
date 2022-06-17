@@ -1,14 +1,21 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { taskQuery } from "./Board";
 type Props = {
   show: Boolean;
   setShow: (arg: boolean) => void;
   boardCategory: String;
-  title: String;
-  description: String;
-  assign?: String;
 };
-const createTaskMutation = gql`
+const QueryAllUsers = gql`
+  query queryUsers {
+    users {
+      name
+    }
+  }
+`;
+export const createTaskMutation = gql`
   mutation createTask(
     $id: String
     $title: String!
@@ -30,18 +37,24 @@ const createTaskMutation = gql`
     }
   }
 `;
+
 const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
+  const {
+    data: usersData,
+    loading: usersLoading,
+    error: usersError,
+  } = useQuery(QueryAllUsers);
   const [createTask, { data, loading, error }] =
     useMutation(createTaskMutation);
-
-  const [formData, setFormData] = useState({
+  const initialState = {
     title: "",
     description: "",
     assign: "",
-  });
+  };
+  console.log(usersData.users.map((el) => console.log(el.name)));
+  const [formData, setFormData] = useState(initialState);
 
-  //   console.log(formData);
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     createTask({
       variables: {
@@ -49,10 +62,12 @@ const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
         description: formData.description,
         status: boardCategory,
       },
+      refetchQueries: [{ query: taskQuery }, "taskQuery"],
     });
     setShow(false);
+    setFormData(initialState);
   };
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({
       ...formData,
@@ -64,10 +79,15 @@ const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
     <>
       {show ? (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="justify-center items-center flex flex-grow overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
+              <button
+                onClick={() => setShow(false)}
+                className="absolute top-1 right-2 text-xl  text-red-500 z-50"
+              >
+                <FontAwesomeIcon icon={faClose} className="text-2xl" />
+              </button>
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                {/*header*/}
                 <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                   <h3 className="text-3xl font-semibold">Add task</h3>
                 </div>
@@ -94,17 +114,22 @@ const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
                       className="border border-gray-300 p-2 rounded-md"
                     />
                     <label>Assign to</label>
-                    <input
+                    <select>
+                      {usersData &&
+                        usersData.users.map((user) => {
+                          return <option>{user.name}</option>;
+                        })}
+                    </select>
+                    {/* <input
                       type="text"
                       name="assign"
                       value={formData.assign}
                       className="border border-gray-300 p-2 rounded-md"
                       onChange={handleChange}
                       placeholder="Assing to"
-                    />
+                    /> */}
                   </form>
                 </div>
-                {/*footer*/}
                 <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"

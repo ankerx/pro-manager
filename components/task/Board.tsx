@@ -1,8 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import { Box, Grid } from "@mui/material";
+
 import BoardSection from "./BoardSection";
 
-const taskQuery = gql`
+export const taskQuery = gql`
   query {
     tasks {
       id
@@ -21,7 +21,7 @@ const Board: React.FC = () => {
   if (error) return <p>Error</p>;
 
   return (
-    <div className=" flex justify-between">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 align-middle gap-3 lg:gap-10">
       {sections.map((section, index) => {
         let filteredData: Array<Task> = data
           ? data.tasks.filter((task: Task) => {
@@ -29,7 +29,12 @@ const Board: React.FC = () => {
             })
           : [];
         return (
-          <BoardSection title={section} key={index} tasks={filteredData} />
+          <BoardSection
+            title={section}
+            key={index}
+            tasks={filteredData}
+            sections={sections}
+          />
         );
       })}
     </div>

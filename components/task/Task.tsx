@@ -1,60 +1,36 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import UpdateTaskModal from "./UpdateTaskModal";
 
-const UpdateTaskMutation = gql`
-  mutation updateTask(
-    $id: String
-    $title: String!
-    $description: String!
-    $status: String
-    $userId: String
-  ) {
-    updateTask(
-      description: $description
-      id: $id
-      status: $status
-      title: $title
-      userId: $userId
-    ) {
-      id
-      title
-      description
-      status
-    }
-  }
-`;
-const DeleteTaskMutation = gql`
-  mutation deleteTask($id: String!) {
-    deleteTask(id: $id) {
-      id
-    }
-  }
-`;
-const Task: React.FC<Task> = ({
-  title,
-  description,
-  id,
-  status,
-  show,
-  setShow,
-}) => {
-  const [updateTask, { data, error, loading }] =
-    useMutation(UpdateTaskMutation);
-  const [deleteTask] = useMutation(DeleteTaskMutation);
-  console.log(title);
+const Task: React.FC<Task> = ({ title, description, id, status, sections }) => {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [formData, setFormData] = useState({
+    title: title,
+    description: description,
+    assign: "",
+  });
+
   return (
-    <div
-      className="border border-grey-400 px-4 py-2 hover:bg-gray-200 cursor-pointer"
-      onClick={() => setShow(!show)}
-    >
+    <div className="border border-grey-400 px-4 py-2 hover:bg-gray-200  my-4 flex justify-between items-center">
       <h4>{title}</h4>
+      <button
+        className="p-2 flex items-center"
+        onClick={() => setShowEditModal(!showEditModal)}
+      >
+        <FontAwesomeIcon icon={faPenToSquare} className="mx-2" />
+        Edit
+      </button>
       <UpdateTaskModal
-        show={show}
-        setShow={setShow}
-        status={status}
+        setFormData={setFormData}
+        formData={formData}
         title={title}
         description={description}
+        setShowEditModal={setShowEditModal}
+        showEditModal={showEditModal}
+        id={id}
+        sections={sections}
+        status={status}
       />
     </div>
   );

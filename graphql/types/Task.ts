@@ -83,7 +83,7 @@ export const TaskMutation = extendType({
         id: nonNull(stringArg()),
         title: stringArg(),
         description: stringArg(),
-        userId: stringArg(),
+        // userId: stringArg(),
         status: stringArg(),
       },
       resolve(_root, args, ctx) {
