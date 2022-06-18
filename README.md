@@ -1,10 +1,6 @@
-## Task managment application
-
-Used technologies: Typescript, NextJS, GraphQL, Prisma, TailwindCSS
-
 # Manager Pro !
 
-> Task management application - Productive and Extensible
+Task management application - Productive and Extensible
 
 ## 📦 Technologies
 
