@@ -9,7 +9,7 @@ export default function Nav() {
       </h1>
       {session ? (
         <div className="flex gap-3">
-          <p> Signed in as {session.user.email}</p>
+          <p> Signed in as {session?.user?.email}</p>
           <button onClick={() => signOut()}>Sign out</button>
         </div>
       ) : (
