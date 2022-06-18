@@ -8,9 +8,10 @@ type Props = {
   setShow: (arg: boolean) => void;
   boardCategory: String;
 };
-const QueryAllUsers = gql`
+export const QueryAllUsers = gql`
   query queryUsers {
     users {
+      id
       name
     }
   }
@@ -46,27 +47,14 @@ const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
   } = useQuery(QueryAllUsers);
   const [createTask, { data, loading, error }] =
     useMutation(createTaskMutation);
+  const [selectedUser, setSelectedUser] = useState("");
   const initialState = {
     title: "",
     description: "",
-    assign: "",
   };
-  console.log(usersData.users.map((el) => console.log(el.name)));
+  // console.log(usersData)
   const [formData, setFormData] = useState(initialState);
 
-  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    createTask({
-      variables: {
-        title: formData.title,
-        description: formData.description,
-        status: boardCategory,
-      },
-      refetchQueries: [{ query: taskQuery }, "taskQuery"],
-    });
-    setShow(false);
-    setFormData(initialState);
-  };
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({
@@ -74,7 +62,31 @@ const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
       [name]: value,
     });
   };
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedUser(event.target.value);
+    console.log(selectedUser);
+  };
 
+  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    let userId = "";
+    if (selectedUser) {
+      userId = selectedUser;
+    } else if (usersData) {
+      userId = usersData.users[0].id;
+    }
+    createTask({
+      variables: {
+        title: formData.title,
+        description: formData.description,
+        status: boardCategory,
+        userId: userId,
+      },
+      refetchQueries: [{ query: taskQuery }, "taskQuery"],
+    });
+    setShow(false);
+    setFormData(initialState);
+  };
   return (
     <>
       {show ? (
@@ -114,20 +126,20 @@ const AddTaskModal: React.FC<Props> = ({ show, setShow, boardCategory }) => {
                       className="border border-gray-300 p-2 rounded-md"
                     />
                     <label>Assign to</label>
-                    <select>
+                    <select
+                      value={selectedUser}
+                      onChange={handleSelectChange}
+                      className="border border-gray-300 p-2 rounded-md"
+                    >
                       {usersData &&
-                        usersData.users.map((user) => {
-                          return <option>{user.name}</option>;
+                        usersData.users.map((user: User) => {
+                          return (
+                            <option value={user.id} key={user.id}>
+                              {user.name}
+                            </option>
+                          );
                         })}
                     </select>
-                    {/* <input
-                      type="text"
-                      name="assign"
-                      value={formData.assign}
-                      className="border border-gray-300 p-2 rounded-md"
-                      onChange={handleChange}
-                      placeholder="Assing to"
-                    /> */}
                   </form>
                 </div>
                 <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">

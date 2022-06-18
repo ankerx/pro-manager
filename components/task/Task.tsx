@@ -3,7 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import UpdateTaskModal from "./UpdateTaskModal";
 
-const Task: React.FC<Task> = ({ title, description, id, status, sections }) => {
+const Task: React.FC<Task> = ({
+  title,
+  description,
+  id,
+  status,
+  sections,
+  userId,
+}) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [formData, setFormData] = useState({
     title: title,
@@ -29,6 +36,7 @@ const Task: React.FC<Task> = ({ title, description, id, status, sections }) => {
         setShowEditModal={setShowEditModal}
         showEditModal={showEditModal}
         id={id}
+        userId={userId}
         sections={sections}
         status={status}
       />

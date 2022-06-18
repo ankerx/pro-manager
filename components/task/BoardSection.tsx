@@ -34,6 +34,7 @@ const BoardSection: React.FC<BoardSectionProps> = ({
                 description={task.description}
                 id={task.id}
                 sections={sections}
+                userId={task.userId}
               />
             );
           })}

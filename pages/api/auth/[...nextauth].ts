@@ -2,7 +2,8 @@ import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
+
 import Auth0Provider from "next-auth/providers/auth0";
 
 const prisma = new PrismaClient();
@@ -14,10 +15,10 @@ export default NextAuth({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
-    // EmailProvider({
-    //   server: process.env.MAIL_SERVER,
-    //   from: "NextAuth.js <no-reply@example.com>",
-    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET_ID,
+    }),
     // Auth0Provider({
     //   // @ts-ignore
     //   clientId: process.env.AUTH0_ID,

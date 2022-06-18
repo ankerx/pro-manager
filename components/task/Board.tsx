@@ -10,11 +10,16 @@ export const taskQuery = gql`
       title
       description
       status
+      userId
+      user {
+        name
+      }
     }
   }
 `;
 const Board: React.FC = () => {
   const { loading, error, data } = useQuery(taskQuery);
+  console.log(data);
 
   const sections: Array<String> = ["Backlog", "In-Progress", "Review", "Done"];
   if (loading) return <p>Loading...</p>;

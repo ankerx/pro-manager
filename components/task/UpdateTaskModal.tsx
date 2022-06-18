@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import React, { ChangeEvent, useState } from "react";
+import { QueryAllUsers } from "./AddTaskModal";
 import { taskQuery } from "./Board";
 type FormData = {
   title: String;
@@ -9,16 +10,18 @@ type FormData = {
   assign: String;
 };
 type Props = {
-  show: Boolean;
+  showEditModal: Boolean;
   id: String;
-  setShow: (arg: boolean) => void;
+  setShowEditModal: (arg: boolean) => void;
   setFormData: () => void;
   formData: FormData;
-  stauts: String;
+  status: String;
   title: String;
   description: String;
   assign?: String;
   sections: String[];
+  boardCategory: String;
+  userId: String;
 };
 const UpdateTaskMutation = gql`
   mutation updateTask(
@@ -56,11 +59,19 @@ const UpdateTaskModal: React.FC<Props> = ({
   setFormData,
   sections,
   status,
+  userId,
 }) => {
   const [updateTask, { data, loading, error }] =
     useMutation(UpdateTaskMutation);
   // console.log(JSON.stringify(error, null, 2));
-  const [selectValue, setSelectValue] = useState(boardCategory);
+  const {
+    data: usersData,
+    loading: usersLoading,
+    error: usersError,
+  } = useQuery(QueryAllUsers);
+
+  const [selectedValue, setSelectedValue] = useState(boardCategory);
+  const [selectedUser, setSelectedUser] = useState("");
   const [deleteTask] = useMutation(DeleteTaskMutation);
   const handleDelete = () => {
     deleteTask({
@@ -76,17 +87,27 @@ const UpdateTaskModal: React.FC<Props> = ({
     });
   };
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectValue(event.target.value);
-    console.log(selectValue);
+    setSelectedValue(event.target.value);
   };
+  const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedUser(event.target.value);
+  };
+
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    let userId = "";
+    if (selectedUser) {
+      userId = selectedUser;
+    } else if (usersData) {
+      userId = usersData.users[0].id;
+    }
     updateTask({
       variables: {
         id: id,
         title: formData.title,
         description: formData.description,
-        status: selectValue,
+        status: selectedValue,
+        userId: userId,
       },
       refetchQueries: [{ query: taskQuery }, "taskQuery"],
     });
@@ -135,21 +156,27 @@ const UpdateTaskModal: React.FC<Props> = ({
                       className="border border-gray-300 p-2 rounded-md"
                     />
                     <label>Assign to</label>
-                    <input
-                      type="text"
-                      name="assign"
-                      value={formData.assign}
+                    <select
+                      value={selectedUser}
+                      onChange={handleUserChange}
                       className="border border-gray-300 p-2 rounded-md"
-                      onChange={handleChange}
-                      placeholder="Assing to"
-                    />
+                    >
+                      {usersData &&
+                        usersData.users.map((user: User) => {
+                          return (
+                            <option value={user.id} key={user.id}>
+                              {user.name}
+                            </option>
+                          );
+                        })}
+                    </select>
                     <label>Category</label>
                     <select
-                      className="block appearance-none w-full bg-white border border-gray-200 hover:border-gray-300 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                      className="border border-gray-300 p-2 rounded-md"
                       onChange={handleSelectChange}
                       defaultValue={status}
                     >
-                      {sections.map((section, index) => {
+                      {sections.map((section: String, index) => {
                         return (
                           <option value={section} key={index}>
                             {section}
