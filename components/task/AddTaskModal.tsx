@@ -7,6 +7,7 @@ type Props = {
   show: Boolean;
   setShow: (arg: boolean) => void;
   boardCategory: String;
+  sections: String[];
 };
 export const QueryAllUsers = gql`
   query queryUsers {

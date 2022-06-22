@@ -3,6 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import UpdateTaskModal from "./UpdateTaskModal";
 
+type FormData = {
+  title: String;
+  description: String;
+  assign: String;
+};
 const Task: React.FC<Task> = ({
   title,
   description,

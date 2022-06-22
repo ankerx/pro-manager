@@ -4,11 +4,13 @@ import { faClose, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import React, { ChangeEvent, useState } from "react";
 import { QueryAllUsers } from "./AddTaskModal";
 import { taskQuery } from "./Board";
-type FormData = {
-  title: String;
-  description: String;
-  assign: String;
-};
+
+// type FormData = {
+//   title: String;
+//   description: String;
+//   assign: String;
+// };
+
 type Props = {
   showEditModal: Boolean;
   id: String;
@@ -23,6 +25,7 @@ type Props = {
   boardCategory: String;
   userId: String;
 };
+
 const UpdateTaskMutation = gql`
   mutation updateTask(
     $id: String!
@@ -174,11 +177,10 @@ const UpdateTaskModal: React.FC<Props> = ({
                     <select
                       className="border border-gray-300 p-2 rounded-md"
                       onChange={handleSelectChange}
-                      defaultValue={status}
                     >
                       {sections.map((section: String, index) => {
                         return (
-                          <option value={section} key={index}>
+                          <option value={section} key={section}>
                             {section}
                           </option>
                         );
