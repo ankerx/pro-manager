@@ -8,7 +8,7 @@ import { SessionProvider } from "next-auth/react";
 
 import apolloClient from "../lib/apollo";
 import Layout from "../components/layout";
-
+// anajajajajjajajajaj test
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ApolloProvider client={apolloClient}>
